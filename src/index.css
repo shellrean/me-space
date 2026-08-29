@@ -1,0 +1,278 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  color-scheme: light dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+}
+
+@keyframes flow-move {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+
+.flow-packet {
+  fill: #22d3ee;
+  filter: drop-shadow(0 0 3px #22d3ee);
+  offset-rotate: 0deg;
+  animation: flow-move 1.8s linear infinite;
+}
+
+.diagrams-paused .flow-packet {
+  animation-play-state: paused;
+}
+
+/* Thin, unobtrusive scrollbars for editor/preview/sidebar panes */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+/* ---- Premium preview typography ---- */
+.premium-prose {
+  --accent: #22d3ee;
+  --accent-2: #a78bfa;
+  background:
+    radial-gradient(60% 40% at 50% 0%, rgba(167, 139, 250, 0.05), transparent 70%),
+    radial-gradient(40% 30% at 100% 0%, rgba(34, 211, 238, 0.04), transparent 70%);
+  color: #d4d4d8;
+}
+
+.premium-prose h1,
+.premium-prose h2,
+.premium-prose h3,
+.premium-prose h4 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  color: #f4f4f5;
+  letter-spacing: -0.01em;
+}
+
+.premium-prose h1 {
+  font-size: 2.5em;
+  line-height: 1.15;
+  margin-bottom: 0.4em;
+  background: linear-gradient(115deg, #f4f4f5 30%, var(--accent-2) 75%, var(--accent) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.premium-prose h2 {
+  font-size: 1.5em;
+  margin-top: 2.2em;
+  padding-left: 0.75em;
+  border-left: 3px solid var(--accent-2);
+}
+
+.premium-prose h3 {
+  font-size: 1.2em;
+  font-weight: 500;
+  color: #e4e4e7;
+}
+
+.premium-prose p,
+.premium-prose li {
+  line-height: 1.75;
+  color: #c9c9cf;
+}
+
+.premium-prose strong {
+  color: #f4f4f5;
+  font-weight: 600;
+}
+
+.premium-prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(34, 211, 238, 0.35);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease;
+}
+.premium-prose a:hover {
+  text-decoration-color: var(--accent);
+}
+
+.premium-prose blockquote {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-size: 1.1em;
+  color: #e4e4e7;
+  border-left: 3px solid transparent;
+  border-image: linear-gradient(180deg, var(--accent), var(--accent-2)) 1;
+  background: linear-gradient(90deg, rgba(167, 139, 250, 0.06), transparent 60%);
+  padding: 0.6em 1.2em;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+.premium-prose blockquote p {
+  margin: 0;
+}
+
+.premium-prose li::marker {
+  color: var(--accent-2);
+}
+
+.premium-prose hr {
+  border: none;
+  height: 1px;
+  margin: 2.5em 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+}
+
+.premium-prose table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.92em;
+}
+.premium-prose thead {
+  background: rgba(167, 139, 250, 0.08);
+}
+.premium-prose th {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  color: #f4f4f5;
+  text-align: left;
+  padding: 0.6em 1em;
+}
+.premium-prose td {
+  padding: 0.6em 1em;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  color: #c9c9cf;
+}
+.premium-prose tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.premium-prose .inline-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  color: #67e8f9;
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(34, 211, 238, 0.18);
+  border-radius: 5px;
+  padding: 0.15em 0.4em;
+}
+
+.premium-prose img {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ---- Premium task-list checkboxes ---- */
+.premium-prose ul.contains-task-list {
+  padding-left: 0.25em;
+}
+
+.premium-prose li.task-list-item {
+  list-style: none;
+  margin-left: -1.5em;
+  padding-left: 1.5em;
+  transition: color 0.15s ease;
+}
+
+.premium-prose li.task-list-item input[type='checkbox'],
+.premium-prose .table-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(167, 139, 250, 0.45);
+  background: rgba(255, 255, 255, 0.03);
+  vertical-align: middle;
+  position: relative;
+  cursor: default;
+  transition: all 0.15s ease;
+}
+
+.premium-prose li.task-list-item input[type='checkbox'] {
+  margin: 0 0.65em 0 -1.5em;
+  top: -1px;
+}
+
+.premium-prose li.task-list-item input[type='checkbox']:hover {
+  border-color: rgba(167, 139, 250, 0.8);
+}
+
+.premium-prose li.task-list-item input[type='checkbox']:checked,
+.premium-prose .table-checkbox.checked {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.35);
+}
+
+.premium-prose li.task-list-item input[type='checkbox']:checked::after,
+.premium-prose .table-checkbox.checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 9px;
+  border: solid #0b0c10;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.premium-prose td.checkbox-cell {
+  text-align: center;
+}
+
+.premium-prose li.task-list-item:has(input[type='checkbox']:checked) {
+  color: #6b6b74;
+}
+
+.premium-prose li.task-list-item:has(input[type='checkbox']:checked) > p,
+.premium-prose li.task-list-item:has(input[type='checkbox']:checked) {
+  text-decoration: line-through;
+  text-decoration-color: rgba(107, 107, 116, 0.6);
+  text-decoration-thickness: 1px;
+}
+
+/* ---- Inline comment highlights ---- */
+.premium-prose mark.comment-highlight {
+  background: rgba(34, 211, 238, 0.16);
+  border-bottom: 1.5px dotted rgba(34, 211, 238, 0.6);
+  color: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+.premium-prose mark.comment-highlight:hover {
+  background: rgba(34, 211, 238, 0.28);
+}
