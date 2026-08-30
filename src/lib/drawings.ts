@@ -36,7 +36,7 @@ export interface DrawingScene {
   files: Record<string, unknown>
 }
 
-export const DRAWING_SOURCE = 'me-space'
+export const DRAWING_SOURCE = 'extraodev-space'
 
 export function emptyDrawingContent(): string {
   return `${JSON.stringify(

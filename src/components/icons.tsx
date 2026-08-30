@@ -156,6 +156,23 @@ export function IconImageDown({ className }: IconProps) {
   )
 }
 
+export function IconActivity({ className }: IconProps) {
+  return (
+    <svg {...BASE_PROPS} className={className}>
+      <path d="M3 12h3.5l2.5-7 4 14 2.5-7H21" />
+    </svg>
+  )
+}
+
+export function IconSidebar({ className }: IconProps) {
+  return (
+    <svg {...BASE_PROPS} className={className}>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <line x1="9.5" y1="4" x2="9.5" y2="20" />
+    </svg>
+  )
+}
+
 export function IconGrid({ className }: IconProps) {
   return (
     <svg {...BASE_PROPS} className={className}>

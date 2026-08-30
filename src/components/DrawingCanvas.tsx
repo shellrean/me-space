@@ -13,6 +13,7 @@ import type {
   BinaryFiles,
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
+  LibraryItems,
 } from '@excalidraw/excalidraw/types'
 import type {
   ExcalidrawElement,
@@ -20,6 +21,11 @@ import type {
 } from '@excalidraw/excalidraw/element/types'
 import '@excalidraw/excalidraw/index.css'
 import { parseDrawing } from '../lib/drawings'
+import {
+  buildStencilLibraryItems,
+  loadUserLibraryItems,
+  saveUserLibraryItems,
+} from '../lib/drawingLibrary'
 import { IconGrid } from './icons'
 
 /**
@@ -108,6 +114,9 @@ const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>(functi
   })
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null)
   const saveTimeout = useRef<number | null>(null)
+  // Guards the library round-trip: Excalidraw reports an empty library while
+  // ours is still loading, and persisting that would wipe the user's items.
+  const libraryReady = useRef(false)
   const lastSerialized = useRef(initial.serialized)
   // Mirrored into React state purely so the menu item can render its checkmark;
   // the canvas itself reads the flag straight off its own appState.
@@ -128,6 +137,32 @@ const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>(functi
     },
     [filePath, onSave],
   )
+
+  const handleApi = useCallback((api: ExcalidrawImperativeAPI) => {
+    apiRef.current = api
+    if (libraryReady.current) return
+
+    // Built-in stencils are rebuilt from source every time and stacked in front
+    // of whatever the user has saved, so deleting one only lasts the session.
+    loadUserLibraryItems()
+      // A saved library that fails to load shouldn't cost the user the
+      // built-in stencils too, so fall back to shipping just those.
+      .catch(() => [])
+      .then((userItems) =>
+        api.updateLibrary({
+          libraryItems: [...buildStencilLibraryItems(), ...userItems],
+          merge: false,
+        }),
+      )
+      .finally(() => {
+        libraryReady.current = true
+      })
+  }, [])
+
+  const handleLibraryChange = useCallback((items: LibraryItems) => {
+    if (!libraryReady.current) return
+    saveUserLibraryItems(items)
+  }, [])
 
   useImperativeHandle(ref, () => ({
     async exportImage(format) {
@@ -161,9 +196,8 @@ const DrawingCanvas = forwardRef<DrawingCanvasHandle, DrawingCanvasProps>(functi
   return (
     <div className="h-full w-full">
       <Excalidraw
-        excalidrawAPI={(api) => {
-          apiRef.current = api
-        }}
+        excalidrawAPI={handleApi}
+        onLibraryChange={handleLibraryChange}
         initialData={initialData}
         onChange={handleChange}
         theme="dark"

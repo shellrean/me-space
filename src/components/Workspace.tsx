@@ -17,12 +17,14 @@ import QuickOpen from './QuickOpen'
 import CommentsPanel from './CommentsPanel'
 import type { DrawingCanvasHandle, ExportFormat } from './DrawingCanvas'
 import {
+  IconActivity,
   IconArchive,
   IconChecklist,
   IconImageDown,
   IconKanban,
   IconMessage,
   IconSearch,
+  IconSidebar,
   IconSunrise,
   IconTerminal,
 } from './icons'
@@ -131,6 +133,7 @@ function Workspace({ initialPath, active, onRootChange }: WorkspaceProps) {
   const [commentsStore, setCommentsStore] = useState<CommentsStore>({})
   const [showComments, setShowComments] = useState(false)
   const [jiraCollapsed, setJiraCollapsed] = useState(false)
+  const [sidebarHidden, setSidebarHidden] = useState(false)
   const [exportNotice, setExportNotice] = useState<string | null>(null)
   const [exporting, setExporting] = useState(false)
   const saveTimeout = useRef<number | null>(null)
@@ -233,6 +236,9 @@ function Workspace({ initialPath, active, onRootChange }: WorkspaceProps) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
         e.preventDefault()
         if (root) setShowQuickOpen(true)
+      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault()
+        setSidebarHidden((v) => !v)
       }
     }
     window.addEventListener('keydown', handleKey)
@@ -660,6 +666,17 @@ function Workspace({ initialPath, active, onRootChange }: WorkspaceProps) {
   const wordCount = source.trim() ? source.trim().split(/\s+/).length : 0
   const activeKind = activeFile ? documentKind(activeFile.name) : null
   const isDrawing = activeKind === 'drawing'
+  // A drawing (or preview-only mode) fills the document area with a single
+  // pane instead of the editor/preview pair; the sidebar drops out of the grid
+  // entirely when hidden, since `display: none` elements aren't grid items.
+  const onePane = (previewOnly || isDrawing) && !!activeFile
+  const documentColumns = sidebarHidden
+    ? onePane
+      ? 'grid-cols-[1fr]'
+      : 'grid-cols-[1fr_1fr]'
+    : onePane
+      ? 'grid-cols-[240px_1fr]'
+      : 'grid-cols-[240px_1fr_1fr]'
 
   return (
     <div className="relative flex h-full flex-col bg-neutral-950 text-neutral-100">
@@ -672,9 +689,22 @@ function Workspace({ initialPath, active, onRootChange }: WorkspaceProps) {
       )}
       <header className="flex items-center justify-between gap-4 border-b border-white/10 px-4 py-2">
         <div className="flex items-center gap-3">
-          <h1 className="text-sm font-semibold tracking-wide text-neutral-300">
-            Markdown Workspace
-          </h1>
+          <div className="flex items-center gap-2">
+            <img src="/logo.webp" alt="" className="h-5 w-5 shrink-0 rounded-md" />
+            <h1 className="text-sm font-semibold tracking-wide text-neutral-300">
+              Extraodev Space
+            </h1>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSidebarHidden((v) => !v)}
+            title={sidebarHidden ? 'Tampilkan sidebar (⌘B)' : 'Sembunyikan sidebar (⌘B)'}
+            className={`flex items-center justify-center rounded border border-white/10 p-1.5 hover:bg-white/10 ${
+              sidebarHidden ? 'text-cyan-300' : 'text-neutral-300'
+            }`}
+          >
+            <IconSidebar className="h-4 w-4" />
+          </button>
           {root && (
             <button
               type="button"
@@ -716,24 +746,28 @@ function Workspace({ initialPath, active, onRootChange }: WorkspaceProps) {
             </button>
           )}
           {activeFile && (saveState === 'saving' || saveState === 'saved') && (
-            <span className="text-xs text-neutral-500">
-              {saveState === 'saving' && 'menyimpan…'}
-              {saveState === 'saved' && 'tersimpan'}
-            </span>
+            <span
+              title={saveState === 'saving' ? 'Menyimpan…' : 'Tersimpan'}
+              className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                saveState === 'saving' ? 'animate-pulse bg-neutral-500' : 'bg-cyan-400/70'
+              }`}
+            />
           )}
         </div>
 
         <div className="flex items-center gap-3">
-          <label className="flex items-center gap-1.5 text-xs text-neutral-400">
-            <input
-              type="checkbox"
-              checked={animate}
-              onChange={(e) => setAnimate(e.target.checked)}
-              className="accent-cyan-400"
-            />
-            Animasi aliran data
-          </label>
-          <span className="text-xs text-neutral-500">Mermaid • GFM • Live Preview</span>
+          {activeFile && !isDrawing && (
+            <button
+              type="button"
+              onClick={() => setAnimate((v) => !v)}
+              title={animate ? 'Matikan animasi aliran data' : 'Nyalakan animasi aliran data'}
+              className={`flex items-center justify-center rounded border border-white/10 p-1.5 hover:bg-white/10 ${
+                animate ? 'text-cyan-300' : 'text-neutral-300'
+              }`}
+            >
+              <IconActivity className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </header>
 
@@ -757,11 +791,15 @@ function Workspace({ initialPath, active, onRootChange }: WorkspaceProps) {
       )}
 
       <main
-        className={`grid min-h-0 flex-1 ${
-          (previewOnly || isDrawing) && activeFile ? 'grid-cols-[240px_1fr]' : 'grid-cols-[240px_1fr_1fr]'
-        } divide-x divide-white/10 ${animate ? '' : 'diagrams-paused'}`}
+        className={`grid min-h-0 flex-1 ${documentColumns} divide-x divide-white/10 ${
+          animate ? '' : 'diagrams-paused'
+        }`}
       >
-        <div className="flex min-h-0 flex-col divide-y divide-white/10 overflow-hidden bg-neutral-900/40">
+        <div
+          className={`flex min-h-0 flex-col divide-y divide-white/10 overflow-hidden bg-neutral-900/40 ${
+            sidebarHidden ? 'hidden' : ''
+          }`}
+        >
           {root && projectConfig && (
             <div className="shrink-0 px-3 py-2.5">
               <div className="flex items-center justify-between">

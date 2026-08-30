@@ -23,6 +23,11 @@ export default function WelcomeScreen({
   return (
     <div className="col-span-2 flex h-full flex-col items-center justify-center gap-10 overflow-y-auto bg-[#0b0c10] px-6 py-10">
       <div className="text-center">
+        <img
+          src="/logo.webp"
+          alt="Extraodev Space"
+          className="mx-auto mb-4 h-16 w-16 rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
+        />
         <h1
           style={{ fontFamily: "'Fraunces', Georgia, serif" }}
           className="text-3xl font-semibold text-neutral-100"
